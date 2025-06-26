@@ -1,0 +1,7 @@
+---
+- name: configure fastapi backend
+  hosts: backend_servers
+  become: yes
+  roles: 
+    - fastapi
+...

@@ -1,0 +1,37 @@
+---
+  - name: update apt cache
+    apt:
+      update_cache:yes
+    when: ansible_os_family == "Debian"
+  
+  - name: install required packages 
+    package: 
+      name: 
+        - python3
+        - python3-pip
+        - git 
+      state: present
+
+  - name: clone repository
+    git:
+      repo: "url"
+      dest: /opt/myfullstackapp
+      version: main
+    register: git_clone
+    
+  - name:  install python requirements
+    pip:  
+      requirements: /opt/myfullstackapp/backend/rquirements.txt
+      executeable: pip3
+
+  - name:  create system MD for fastapi
+    template: 
+      src:  fastapi.service.j2
+      dest:  /etc/systemd/system/fastapi.service
+    notify: restart fastapi
+
+  - name:  enable fastapi service
+    systemd:  
+      name: fastapi 
+      enable:  yes
+      state: started
